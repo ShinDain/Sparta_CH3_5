@@ -6,11 +6,16 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "Camera/CameraComponent.h"
+#include "DrawDebugHelpers.h"
+#include "Equipment/CHEquipmentComponent.h"
+#include "Physics/CHCollision.h"
 
 ACHCharacterPlayer::ACHCharacterPlayer()
 {
 	FPSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FOVCamera"));
 	FPSCamera->SetupAttachment(RootComponent);
+	
+	EquipmentComp = CreateDefaultSubobject<UCHEquipmentComponent>(TEXT("EquipmentComponent"));
 }
 
 void ACHCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -36,6 +41,23 @@ void ACHCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 }
 
+void ACHCharacterPlayer::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	OnPlayerAttackTrigger.AddDynamic(EquipmentComp, &UCHEquipmentComponent::OnAttack);
+}
+
+FVector ACHCharacterPlayer::GetFPSCameraLocation() const
+{
+	return FPSCamera->GetComponentLocation();
+}
+
+FVector ACHCharacterPlayer::GetFPSCameraForwardDirection() const
+{
+	return FPSCamera->GetForwardVector();
+}
+
 void ACHCharacterPlayer::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -50,7 +72,6 @@ void ACHCharacterPlayer::Move(const FInputActionValue& Value)
 	AddMovementInput(RightDirection, MovementVector.Y);
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void ACHCharacterPlayer::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -62,9 +83,46 @@ void ACHCharacterPlayer::Look(const FInputActionValue& Value)
 	NewCameraRotation.Pitch = FMath::Clamp(NewCameraRotation.Pitch + LookAxisVector.Y, -89.0f, 89.0f);
 	FPSCamera->SetRelativeRotation(NewCameraRotation);
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void ACHCharacterPlayer::Attack(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Log, TEXT("Attacked"));
+	OnPlayerAttackTrigger.Broadcast();
+}
+
+FHitResult ACHCharacterPlayer::PerformLineTraceForProjectileWeapon()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+		return FHitResult();
+	
+	FVector StartLocation = GetFPSCameraLocation();
+	FVector EndLocation = GetFPSCameraLocation() + (GetFPSCameraForwardDirection() * 5000.0f);
+	
+	FHitResult HitResult;
+	
+	FCollisionQueryParams QueryParams;
+	TArray<AActor*> IgnoredActors = {this, GetOwner()};
+	QueryParams.AddIgnoredActors(IgnoredActors);
+	QueryParams.bTraceComplex = false;
+	
+	ECollisionChannel TraceChannel = CCHANNEL_CHPROJECTILE;
+	bool bHit = World->LineTraceSingleByChannel(
+		HitResult, StartLocation, EndLocation, TraceChannel,
+		QueryParams
+		);
+	
+	DrawDebugLine(World, StartLocation, EndLocation, FColor::Red, false, 3.0f);
+		
+	if (bHit)
+	{
+		DrawDebugSphere(World, HitResult.ImpactPoint, 5.0, 16, FColor::Green, false, 5.0f);
+		
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Hit Actor is %s"), *HitActor->GetName());
+		}
+	}
+	
+	return HitResult;
 }

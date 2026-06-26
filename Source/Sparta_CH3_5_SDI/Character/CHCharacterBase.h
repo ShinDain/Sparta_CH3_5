@@ -14,4 +14,5 @@ class SPARTA_CH3_5_SDI_API ACHCharacterBase : public ACharacter
 public:
 	ACHCharacterBase();
 	
+	void AddMoveIgnoreActor(AActor* IgnoreActor, bool bShouldIgnore);
 };

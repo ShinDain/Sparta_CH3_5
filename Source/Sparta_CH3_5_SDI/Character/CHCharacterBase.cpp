@@ -2,6 +2,7 @@
 
 
 #include "CHCharacterBase.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ACHCharacterBase::ACHCharacterBase()
@@ -13,4 +14,10 @@ ACHCharacterBase::ACHCharacterBase()
 	}
 	
 	GetCapsuleComponent();
+}
+
+void ACHCharacterBase::AddMoveIgnoreActor(AActor* IgnoreActor, bool bShouldIgnore)
+{
+	UCapsuleComponent* CollisionComp = GetCapsuleComponent();
+	CollisionComp->IgnoreActorWhenMoving(IgnoreActor, bShouldIgnore);
 }
