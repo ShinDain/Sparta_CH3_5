@@ -7,4 +7,6 @@ UCHWeaponDefinition::UCHWeaponDefinition()
 	:Super()
 {
 	Slot = ECHEquipmentSlot::Weapon;
+	RecoilFOVOffset = 5.0f;
+	//FOVRecoverySpeed = 10.0f;
 }

@@ -8,14 +8,28 @@
 #include "Camera/CameraComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Equipment/CHEquipmentComponent.h"
+#include "Equipment/CHWeaponDefinition.h"
+#include "Equipment/CHWeaponInstance.h"
 #include "Physics/CHCollision.h"
 
 ACHCharacterPlayer::ACHCharacterPlayer()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 	FPSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FOVCamera"));
 	FPSCamera->SetupAttachment(RootComponent);
 	
 	EquipmentComp = CreateDefaultSubobject<UCHEquipmentComponent>(TEXT("EquipmentComponent"));
+}
+
+void ACHCharacterPlayer::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	if (FOVTimeline.IsPlaying())
+	{
+		FOVTimeline.TickTimeline(DeltaSeconds);
+	}
 }
 
 void ACHCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -46,6 +60,24 @@ void ACHCharacterPlayer::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	OnPlayerAttackTrigger.AddDynamic(EquipmentComp, &UCHEquipmentComponent::OnAttack);
+	
+	if (FPSCamera)
+	{
+		DefaultFOV = FPSCamera->FieldOfView;
+	}
+	if (FOVCurve)
+	{
+		FOnTimelineFloat ProgressFunction;
+		ProgressFunction.BindUFunction(this, FName("HandleTimelineProgress"));
+		
+		FOVTimeline.AddInterpFloat(FOVCurve, ProgressFunction);
+		//FOVTimeline.SetTimelineLength(1.0f);
+		FOVTimeline.SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+	}
+	if (EquipmentComp)
+	{
+		EquipmentComp->OnWeaponAttackSuccessed.AddUObject(this, &ACHCharacterPlayer::RecoilCameraByWeaponFire);
+	}
 }
 
 FVector ACHCharacterPlayer::GetFPSCameraLocation() const
@@ -56,6 +88,15 @@ FVector ACHCharacterPlayer::GetFPSCameraLocation() const
 FVector ACHCharacterPlayer::GetFPSCameraForwardDirection() const
 {
 	return FPSCamera->GetForwardVector();
+}
+
+void ACHCharacterPlayer::HandleTimelineProgress(float Value)
+{
+	if (FPSCamera)
+	{
+		float NewFOV = FMath::Lerp(DefaultFOV, TargetFOV, Value);
+		FPSCamera->SetFieldOfView(NewFOV);
+	}
 }
 
 void ACHCharacterPlayer::Move(const FInputActionValue& Value)
@@ -125,4 +166,22 @@ FHitResult ACHCharacterPlayer::PerformLineTraceForProjectileWeapon()
 	}
 	
 	return HitResult;
+}
+
+void ACHCharacterPlayer::RecoilCameraByWeaponFire()
+{
+	UE_LOG(LogTemp, Log, TEXT("RecoilFunction Called"));
+	
+	if (FOVCurve
+		&& EquipmentComp)
+	{
+		const UCHWeaponDefinition* Definition = EquipmentComp->GetWeaponDefinition();
+		float RecoilFOVOffset = 3.0f;
+		if (Definition)
+			RecoilFOVOffset = Definition->RecoilFOVOffset;
+		
+		TargetFOV = DefaultFOV - RecoilFOVOffset;
+		
+		FOVTimeline.PlayFromStart();
+	}
 }

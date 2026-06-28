@@ -6,6 +6,7 @@
 #include "CHCharacterBase.h"
 #include "InputActionValue.h"
 #include "Interface/CHWeaponInterface.h"
+#include "Components/TimelineComponent.h"
 #include "CHCharacterPlayer.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerAttackTrigger);
@@ -21,9 +22,11 @@ class SPARTA_CH3_5_SDI_API ACHCharacterPlayer : public ACHCharacterBase, public 
 public:
 	ACHCharacterPlayer();
 	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void Tick(float DeltaSeconds) override;
 	
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
+	
 	
 	// Camera Section
 public:
@@ -32,6 +35,18 @@ public:
 protected:	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Camera)
 	TObjectPtr<class UCameraComponent> FPSCamera;
+	
+	float DefaultFOV;
+	float TargetFOV;
+	
+	UPROPERTY(EditAnywhere, Category = "Camera|FOV")
+	TObjectPtr<UCurveFloat> FOVCurve;
+	
+private:
+	FTimeline FOVTimeline;
+	
+	UFUNCTION()
+	void HandleTimelineProgress(float Value);
 	
 	// Movement Section
 public:
@@ -65,4 +80,6 @@ protected:
 	// Weapon Section
 public:
 	virtual FHitResult PerformLineTraceForProjectileWeapon() override;
+	
+	void RecoilCameraByWeaponFire();
 };

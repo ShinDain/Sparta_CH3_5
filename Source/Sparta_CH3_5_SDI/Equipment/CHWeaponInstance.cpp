@@ -26,6 +26,16 @@ void ACHWeaponInstance::OnActive()
 	FireProjectileWeapon();
 }
 
+const UCHWeaponDefinition* ACHWeaponInstance::GetWeaponDefinition() const
+{
+	return WeaponDefinition;
+}
+
+void ACHWeaponInstance::RegisterOnFireSuccess(FSimpleDelegate InDelegate)
+{
+	OnFireSuccess.Add(InDelegate);
+}
+
 void ACHWeaponInstance::FireProjectileWeapon()
 {
 	UWorld* World = GetWorld();
@@ -55,6 +65,8 @@ void ACHWeaponInstance::FireProjectileWeapon()
 		{			
 			NewProjectile->SetProjectileMovement(Direction);
 			NewProjectile->FinishSpawning(SpawnTransform);
+			
+			OnFireSuccess.Broadcast();
 		}		
 	}
 }

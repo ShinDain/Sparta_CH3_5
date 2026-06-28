@@ -17,7 +17,13 @@ class SPARTA_CH3_5_SDI_API UCHWeaponDefinition : public UCHEquipmentDefinition
 public:
 	UCHWeaponDefinition();
 	
-	UPROPERTY(Editdefaultsonly, BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = Weapon)
 	TSubclassOf<class ACHProjectileBase> ProjectileClass;
-
+	
+	UPROPERTY(EditAnywhere, Category = "Weapon|FOV")
+	float RecoilFOVOffset;
+	
+	// UPROPERTY(EditAnywhere, Category = "Weapon|FOV")
+	// float FOVRecoverySpeed;
+	//
 };

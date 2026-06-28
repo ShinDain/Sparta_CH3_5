@@ -6,6 +6,7 @@
 #include "Equipment/CHEquipmentInstance.h"
 #include "Character/CHCharacterBase.h"
 #include "Equipment/CHWeaponInstance.h"
+#include "Equipment/CHWeaponDefinition.h"
 
 UCHEquipmentComponent::UCHEquipmentComponent()
 {
@@ -50,6 +51,9 @@ void UCHEquipmentComponent::EquipEquipment(UCHEquipmentDefinition* InEquipmentDe
 		NewEquipment->AttachToComponent(CharacterMesh, TransformRules, TEXT("WeaponSocket"));
 		NewEquipment->FinishSpawning(FTransform::Identity);
 		OnEquipmentAttackTrigger.AddDynamic(NewEquipment, &ACHWeaponInstance::OnActive);
+		Weapon = NewEquipment;
+		
+		NewEquipment->RegisterOnFireSuccess(FSimpleDelegate::CreateUObject(this, &UCHEquipmentComponent::OnWeaponAttackSuccessed_Implement));
 	}
 }
 
@@ -71,5 +75,18 @@ void UCHEquipmentComponent::UnequipEquipment(ECHEquipmentSlot InSlot)
 void UCHEquipmentComponent::OnAttack()
 {
 	OnEquipmentAttackTrigger.Broadcast();
+}
+
+void UCHEquipmentComponent::OnWeaponAttackSuccessed_Implement()
+{
+	OnWeaponAttackSuccessed.Broadcast();
+}
+
+const UCHWeaponDefinition* UCHEquipmentComponent::GetWeaponDefinition() const
+{	
+	if (Weapon)
+		return Weapon->GetWeaponDefinition();
+	
+	return nullptr;
 }
 

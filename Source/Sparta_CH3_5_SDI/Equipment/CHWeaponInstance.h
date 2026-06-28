@@ -6,6 +6,10 @@
 #include "Equipment/CHEquipmentInstance.h"
 #include "CHWeaponInstance.generated.h"
 
+class UCHEquipmentDefinition;
+class UCHWeaponDefinition;
+
+DECLARE_MULTICAST_DELEGATE(FOnFireSuccess);
 /**
  * 
  */
@@ -16,15 +20,21 @@ class SPARTA_CH3_5_SDI_API ACHWeaponInstance : public ACHEquipmentInstance
 		
 public:
 	ACHWeaponInstance();
-	virtual void SetCHEquipmentDefinition(class UCHEquipmentDefinition* InDefinition) override;
+	virtual void SetCHEquipmentDefinition(UCHEquipmentDefinition* InDefinition) override;
 	
 public:
 	virtual void OnActive() override;
+	const UCHWeaponDefinition* GetWeaponDefinition() const;
+	
+	void RegisterOnFireSuccess(FSimpleDelegate InDelegate);
 	
 protected:
+	FOnFireSuccess OnFireSuccess;
 	void FireProjectileWeapon();
 	
 protected:
-	TObjectPtr<class UCHWeaponDefinition> WeaponDefinition;
+	UPROPERTY()
+	TObjectPtr<UCHWeaponDefinition> WeaponDefinition;
+	
 	TSubclassOf<class ACHProjectileBase> ProjectileClass;
 };
