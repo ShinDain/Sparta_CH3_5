@@ -22,16 +22,9 @@ class SPARTA_CH3_5_SDI_API UCHEquipmentDefinition : public UPrimaryDataAsset
 	GENERATED_BODY()
 	
 public:
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
 	TObjectPtr<class UStaticMesh> Mesh;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
 	ECHEquipmentSlot Slot;
-	
-	// Weapon Section  
-public:
-	UPROPERTY(Editdefaultsonly, BlueprintReadWrite, Category = Weapon)
-	TSubclassOf<class ACHProjectileBase> ProjectileClass;
-
 };

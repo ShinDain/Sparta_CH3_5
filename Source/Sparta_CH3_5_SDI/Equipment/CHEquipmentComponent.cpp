@@ -5,6 +5,7 @@
 #include "Equipment/CHEquipmentDefinition.h"
 #include "Equipment/CHEquipmentInstance.h"
 #include "Character/CHCharacterBase.h"
+#include "Equipment/CHWeaponInstance.h"
 
 UCHEquipmentComponent::UCHEquipmentComponent()
 {
@@ -21,6 +22,8 @@ void UCHEquipmentComponent::EquipEquipment(UCHEquipmentDefinition* InEquipmentDe
 	if (InEquipmentDefinition == nullptr)
 		return;
 	
+	
+	// Weapon Section
 	ECHEquipmentSlot Slot = InEquipmentDefinition->Slot;
 	if (Slot != ECHEquipmentSlot::Weapon)
 	{
@@ -32,7 +35,7 @@ void UCHEquipmentComponent::EquipEquipment(UCHEquipmentDefinition* InEquipmentDe
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		ACHEquipmentInstance* NewEquipment = World->SpawnActorDeferred<ACHEquipmentInstance>(ACHEquipmentInstance::StaticClass()
+		ACHWeaponInstance* NewEquipment = World->SpawnActorDeferred<ACHWeaponInstance>(ACHWeaponInstance::StaticClass()
 			, FTransform::Identity, GetOwner(), nullptr);
 		NewEquipment->SetCHEquipmentDefinition(InEquipmentDefinition);
 		
@@ -46,7 +49,7 @@ void UCHEquipmentComponent::EquipEquipment(UCHEquipmentDefinition* InEquipmentDe
 			);
 		NewEquipment->AttachToComponent(CharacterMesh, TransformRules, TEXT("WeaponSocket"));
 		NewEquipment->FinishSpawning(FTransform::Identity);
-		OnEquipmentAttackTrigger.AddDynamic(NewEquipment, &ACHEquipmentInstance::OnAttack);
+		OnEquipmentAttackTrigger.AddDynamic(NewEquipment, &ACHWeaponInstance::OnActive);
 	}
 }
 

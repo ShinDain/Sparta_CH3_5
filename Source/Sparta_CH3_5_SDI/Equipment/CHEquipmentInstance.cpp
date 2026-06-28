@@ -18,43 +18,4 @@ void ACHEquipmentInstance::SetCHEquipmentDefinition(UCHEquipmentDefinition* InDe
 {
 	EquipmentDefinition = InDefinition;
 	StaticMesh->SetStaticMesh(EquipmentDefinition->Mesh);
-	ProjectileClass = EquipmentDefinition->ProjectileClass;
-}
-
-void ACHEquipmentInstance::OnAttack()
-{
-	FireProjectileWeapon();
-}
-
-void ACHEquipmentInstance::FireProjectileWeapon()
-{
-	UWorld* World = GetWorld();
-	ensure(World);
-	FTransform SpawnTransform(GetActorLocation());
-	
-	if (ProjectileClass)
-	{
-		FVector Direction(GetOwner()->GetActorForwardVector());
-		
-		if (ICHWeaponInterface* WeaponInterface  = Cast<ICHWeaponInterface>(GetOwner()))
-		{
-			FHitResult HitResult = WeaponInterface->PerformLineTraceForProjectileWeapon();
-
-			if(HitResult.GetActor() != nullptr)
-			{
-				FVector StartLocation = GetActorLocation();
-				FVector EndLocation = HitResult.ImpactPoint;
-				Direction = EndLocation - StartLocation;
-				Direction.Normalize();	
-			}
-		}
-		
-		ACHProjectileBase* NewProjectile = World->SpawnActorDeferred<ACHProjectileBase>
-			(ProjectileClass, SpawnTransform, GetOwner(), nullptr);
-		if (NewProjectile)
-		{			
-			NewProjectile->SetProjectileMovement(Direction);
-			NewProjectile->FinishSpawning(SpawnTransform);
-		}		
-	}
 }

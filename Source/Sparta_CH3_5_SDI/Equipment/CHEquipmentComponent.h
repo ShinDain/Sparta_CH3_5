@@ -31,8 +31,9 @@ public:
 	
 	FEquipmentAttackTrigger OnEquipmentAttackTrigger;
 	
+	// Weapon Section
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
-	TObjectPtr<class ACHEquipmentInstance> Weapon;
+	TObjectPtr<class ACHWeaponInstance> Weapon;
 	
 };

@@ -16,16 +16,14 @@ public:
 	
 	virtual void SetCHEquipmentDefinition(class UCHEquipmentDefinition* InDefinition);
 	
-	// Weapon Section
 public:
 	UFUNCTION()
-	virtual void OnAttack();
-protected:
-	void FireProjectileWeapon(); 
-	
-protected:
+	virtual void OnActive() {};
+private:
+	UPROPERTY()
 	TObjectPtr<UCHEquipmentDefinition> EquipmentDefinition;
-	TSubclassOf<class ACHProjectileBase> ProjectileClass;
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh)
 	TObjectPtr<class UStaticMeshComponent> StaticMesh;
 
 };
