@@ -6,15 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "CHProjectileBase.generated.h"
 
-USTRUCT(BlueprintType)
-struct FProjectileData
-{
-	GENERATED_BODY()
-	
-	float Speed;
-	int32 Damage;	
-};
-
 UCLASS()
 class SPARTA_CH3_5_SDI_API ACHProjectileBase : public AActor
 {

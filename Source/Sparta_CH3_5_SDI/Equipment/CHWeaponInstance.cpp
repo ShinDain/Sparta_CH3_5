@@ -5,6 +5,7 @@
 #include "Interface/CHWeaponInterface.h"
 #include "Equipment/CHWeaponDefinition.h"
 #include "Projectile/CHProjectileBase.h"
+#include "Character/CHCharacterPlayer.h"
 
 ACHWeaponInstance::ACHWeaponInstance()
 {
@@ -45,6 +46,10 @@ void ACHWeaponInstance::FireProjectileWeapon()
 	if (ProjectileClass)
 	{
 		FVector Direction(GetOwner()->GetActorForwardVector());
+		if (ACHCharacterPlayer* Player = Cast<ACHCharacterPlayer>(GetOwner()))
+		{
+			Direction = Player->GetFPSCameraForwardDirection();
+		}
 		
 		if (ICHWeaponInterface* WeaponInterface  = Cast<ICHWeaponInterface>(GetOwner()))
 		{

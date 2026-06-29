@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Physics/CHCollision.h"
 #include "Character/CHCharacterBase.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 ACHProjectileBase::ACHProjectileBase()
@@ -56,6 +57,10 @@ void ACHProjectileBase::SetProjectileMovement(FVector Direction)
 	{
 		FVector Velocity = Direction * Data->Speed;
 		ProjectileMovementComp->Velocity = Velocity;
+		
+		FRotator Rotation = Direction.Rotation();
+		Rotation.Yaw += 90.0f;
+		Mesh->SetRelativeRotation(Rotation);
 	}
 }
 
@@ -67,8 +72,12 @@ void ACHProjectileBase::OnProjectileHit(UPrimitiveComponent* HitComponent, AActo
 	if (OtherActor == GetOwner())
 		return;
 	
+	float Damage= Data->Damage;
+	FDamageEvent DamageEvent;
+	OtherActor->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);	
+	
 	Mesh->SetHiddenInGame(true);
-	Destroy();	
+	Destroy();
 }
 
 

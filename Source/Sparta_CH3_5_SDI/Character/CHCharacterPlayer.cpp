@@ -11,6 +11,7 @@
 #include "Equipment/CHWeaponDefinition.h"
 #include "Equipment/CHWeaponInstance.h"
 #include "Physics/CHCollision.h"
+#include "CharacterStat/CHHPComponent.h"
 
 ACHCharacterPlayer::ACHCharacterPlayer()
 {
