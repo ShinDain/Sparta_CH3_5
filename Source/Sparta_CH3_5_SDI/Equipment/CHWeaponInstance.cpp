@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Equipment/CHWeaponInstance.h"
@@ -6,6 +6,7 @@
 #include "Equipment/CHWeaponDefinition.h"
 #include "Projectile/CHProjectileBase.h"
 #include "Character/CHCharacterPlayer.h"
+#include "Equipment/CHEquipmentDefinition.h"
 
 ACHWeaponInstance::ACHWeaponInstance()
 {

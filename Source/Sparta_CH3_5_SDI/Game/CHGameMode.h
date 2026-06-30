@@ -13,6 +13,7 @@ class ACHGameStateBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSpawnedEnemyDeadDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWaveStartDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWaveEndDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGameOverDelegate);
 
 /**
  * 
@@ -34,37 +35,53 @@ public:
 	UFUNCTION()
 	void OnEnemyDestroyed(AActor* DestroyedActor);
 	
+	void CheckWaveEnd();
+	
 	UFUNCTION()
 	void OnLevelEnd();
 	
 	UFUNCTION(BlueprintCallable, Category = "Stage|Enemy")
 	void SpawnEnemy(TSubclassOf<ACHCharacterNonPlayer> SpawnedEnemyClass);
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void WaveStart();
 	UFUNCTION()
 	void WaveEnd();
 	
+	void GameOver();
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnSpawnedEnemyDeadDelegate OnSpawnedEnemyDead;
 	
+	UPROPERTY(BlueprintAssignable)
 	FWaveStartDelegate OnWaveStart;
+	
+	UPROPERTY(BlueprintAssignable)
 	FWaveEndDelegate OnWaveEnd;
+	
+	UPROPERTY(BlueprintAssignable)
+	FGameOverDelegate OnGameOver;
 	
 	UFUNCTION(BlueprintCallable)
 	float GetElapsedTime() {return ElapsedTime;}
 	
-private:
-	float ElapsedTime;
-	TArray<TObjectPtr<AActor>> SpawnedEnemies;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<ACHGameStateBase> CHGameState;
 	
-	UPROPERTY()
-	TObjectPtr<ACHGameMode> CHGameMode;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Level)
+	FName NextLevelName;
+	
+private:
+	uint8 bWaveRunning:1;
+	float ElapsedTime;
 	
 	uint32 SpawnedActorCount;
 	uint32 DestroyedActorCount;
 	
-	ACHGameStateBase* CHGameState;
+	FTimerHandle WaveTimer;
 	FTimerHandle EnemySpawnTimer;
 	FCHWaveRowData* CurrentWaveRowData;
+	
+	UPROPERTY()
+	TArray<TObjectPtr<AActor>> SpawnedEnemies;	
 };

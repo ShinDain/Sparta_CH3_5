@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,7 +9,6 @@
 
 class ACHWeaponInstance;
 class UCHWeaponDefinition;
-class UCHEquipmentDefinition;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEquipmentAttackTrigger);
 DECLARE_MULTICAST_DELEGATE(FOnWeaponAttackSuccess);

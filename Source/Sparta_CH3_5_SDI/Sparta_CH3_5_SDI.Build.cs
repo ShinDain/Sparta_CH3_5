@@ -1,5 +1,6 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
 
 public class Sparta_CH3_5_SDI : ModuleRules
@@ -16,7 +17,9 @@ public class Sparta_CH3_5_SDI : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-		PublicIncludePaths.AddRange(new string[] {"C:\\Unreal Projects\\Sparta_CH3_5_SDI\\Source\\Sparta_CH3_5_SDI"});
+		PublicIncludePaths.AddRange(new string[] {
+			Path.Combine(ModuleDirectory, "")
+		});
 		
 		
 		// Uncomment if you are using Slate UI

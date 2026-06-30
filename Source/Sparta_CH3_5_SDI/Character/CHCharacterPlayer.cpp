@@ -153,18 +153,18 @@ FHitResult ACHCharacterPlayer::PerformLineTraceForProjectileWeapon()
 		QueryParams
 		);
 	
-	DrawDebugLine(World, StartLocation, EndLocation, FColor::Red, false, 3.0f);
-		
-	if (bHit)
-	{
-		DrawDebugSphere(World, HitResult.ImpactPoint, 5.0, 16, FColor::Green, false, 5.0f);
-		
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Hit Actor is %s"), *HitActor->GetName());
-		}
-	}
+	// DrawDebugLine(World, StartLocation, EndLocation, FColor::Red, false, 3.0f);
+	// 	
+	// if (bHit)
+	// {
+	// 	DrawDebugSphere(World, HitResult.ImpactPoint, 5.0, 16, FColor::Green, false, 5.0f);
+	// 	
+	// 	AActor* HitActor = HitResult.GetActor();
+	// 	if (HitActor)
+	// 	{
+	// 		UE_LOG(LogTemp, Log, TEXT("Hit Actor is %s"), *HitActor->GetName());
+	// 	}
+	// }
 	
 	return HitResult;
 }

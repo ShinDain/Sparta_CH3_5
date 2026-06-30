@@ -4,10 +4,16 @@
 #include "Game/CHGameStateBase.h"
 #include "Game/CHGameMode.h"
 
+#include "Kismet/GameplayStatics.h"
+
 ACHGameStateBase::ACHGameStateBase()
 {
 	Score = 0;
 	CurrentWave = 0;
+	
+	CurrentWaveRowData = nullptr;
+	
+	WaveDataTable = nullptr;
 }
 
 void ACHGameStateBase::PostInitializeComponents()
@@ -23,13 +29,13 @@ void ACHGameStateBase::PostInitializeComponents()
 			CHGameMode->OnSpawnedEnemyDead.AddDynamic(this, &ACHGameStateBase::OnEnemyDead);
 		}
 	}
+		
+	SetCurrentWaveData(0);
 }
 
 void ACHGameStateBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SetCurrentWaveData(0);
 }
 
 void ACHGameStateBase::OnEnemyDead()
@@ -43,6 +49,7 @@ void ACHGameStateBase::SetCurrentWaveData(int32 NewWave)
 	CurrentWave = NewWave;
 	if (CurrentWave >= WaveDataTable->GetRowMap().Num())
 	{
+		//UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Script/Engine.World'/Game/Map/Step2.Step2'"));
 		OnLevelEnd.Broadcast();
 		return;
 	}
